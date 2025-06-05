@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "npx oxc@latest .",
     "preview": "vite preview",
     "prepare": "husky"
   },

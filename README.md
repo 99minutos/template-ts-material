@@ -38,6 +38,7 @@ Este template utiliza componentes de Material UI, por defecto se configuró un t
 - `src/domain`: contiene dominios de negocio, interfaces y tipos preferentemente
 - `src/hooks`: contiene hooks personalizados
 - `src/pages`: contiene páginas de la aplicación
+- `src/sections`: contiene las dependencias de las páginas
 - `src/styles`: contiene estilos personalizados
 - `src/utils`: contiene utilidades personalizadas
 
