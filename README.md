@@ -24,6 +24,8 @@ Este template utiliza componentes de Material UI, por defecto se configuró un t
     ├── hooks
     ├── pages
     │   └── welcome
+    ├── sections
+    │   └── welcome
     ├── styles
     └── utils
 ```
