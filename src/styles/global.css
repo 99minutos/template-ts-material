@@ -302,6 +302,7 @@ body {
   padding: 0;
   margin: 0;
   font-family:
+    Barlow,
     Roboto,
     -apple-system,
     BlinkMacSystemFont,
@@ -318,6 +319,7 @@ body {
 html,
 body,
 #root {
+  overflow: hidden;
   height: 100vh;
   max-height: 100vh;
 }

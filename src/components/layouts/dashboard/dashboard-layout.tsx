@@ -25,15 +25,16 @@ export default function DashboardLayout(props: PropsWithChildren) {
 
   const { name } = useAuth0Generic();
   return (
-    <Box sx={{ display: 'flex' }}>
+    <div className="min-h-screen flex flex-col overflow-y-none">
       <AppBar
         color="inherit"
-        position="fixed"
+        position="relative"
         elevation={0}
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         open={openDrawer}
         variant="outlined"
+        sx={{ borderLeft: 'none', borderTop: 'none' }}
       >
         <Toolbar>
           <IconButton
@@ -50,7 +51,7 @@ export default function DashboardLayout(props: PropsWithChildren) {
           </IconButton>
           <img src={logo} style={{ maxHeight: 38 }} alt="99Minutos logo" />
           <Typography ml={1} color="#072146" fontWeight="bold">
-            Brand here
+            BBVA
           </Typography>
 
           <Box sx={{ marginLeft: 2, marginRight: 'auto' }}></Box>
@@ -91,28 +92,20 @@ export default function DashboardLayout(props: PropsWithChildren) {
           )}
         </Toolbar>
       </AppBar>
-
-      <Drawer variant="permanent" open={openDrawer}>
-        <DrawerHeader>
-          <IconButton onClick={toggleDrawer}>
-            <ChevronLeft />
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <DrawerMenu />
-      </Drawer>
-      <main
-        style={{
-          flex: 1,
-          flexGrow: 1,
-          overflowY: 'auto',
-          paddingTop: 'calc(64px)',
-          backgroundColor: '#FAFAFA',
-          height: 'calc(100vh)',
-        }}
-      >
-        {props.children}
-      </main>
-    </Box>
+      <div className="flex flex-grow overflow-y-auto">
+        <Drawer variant="permanent" open={openDrawer} sx={{ border: 'none' }}>
+          <DrawerHeader>
+            <IconButton onClick={toggleDrawer}>
+              <ChevronLeft />
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          <DrawerMenu />
+        </Drawer>
+        <main className="relative flex-1 transition-all duration-300 h-[calc(100vh-4rem)]">
+          {props.children}
+        </main>
+      </div>
+    </div>
   );
 }
