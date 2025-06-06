@@ -1,109 +1,118 @@
-import { useAuth0 } from '@auth0/auth0-react';
-import {
-  AppBar,
-  Avatar,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Typography,
-} from '@mui/material';
+import { ChevronLeft, Menu as MenuIcon } from '@mui/icons-material';
+import { Avatar, Box, Divider, IconButton, Menu, Toolbar, Typography } from '@mui/material';
 import { PropsWithChildren } from 'react';
 
 import logo from '@/assets/logo.svg';
+import { useAuth0Generic } from '@/hooks/auth';
 import { stringAvatar, stringToColor } from '@/utils/strings';
 
-import useDashboardLayout from './useDashboardLayout';
+import { DrawerHeader, AppBar as genAppBar, Drawer as genDrawer } from './dependencies';
+import DrawerMenu from './DrawerMenu';
+import { genClosedMixin, genOpenedMixin } from './mixing';
+import { ProfileMenuOptions } from './ProfileMenuOptions';
+import useLayout from './useLayout';
 
-export function DashboardLayout(props: PropsWithChildren) {
-  const { user, logout } = useAuth0();
-  const { handle_el, handleOpenUserMenu, handleCloseUserMenu } = useDashboardLayout();
+const drawerWidth = 250;
+const openedMixin = genOpenedMixin(drawerWidth);
+const closedMixin = genClosedMixin();
 
+const AppBar = genAppBar(drawerWidth);
+const Drawer = genDrawer(drawerWidth, openedMixin, closedMixin);
+
+export default function DashboardLayout(props: PropsWithChildren) {
+  const { handle_el, openDrawer, handleOpenUserMenu, handleCloseUserMenu, toggleDrawer } =
+    useLayout();
+
+  const { name } = useAuth0Generic();
   return (
-    <Box>
-      <AppBar position="static">
-        <Toolbar
-          sx={{
-            backgroundColor: 'background.paper',
-            boxShadow: 0,
-            borderBottom: '1px solid',
-            borderColor: 'grey.300',
-            padding: { xs: 0, md: '0px 20px' },
-          }}
-        >
+    <Box sx={{ display: 'flex' }}>
+      <AppBar
+        color="inherit"
+        position="fixed"
+        elevation={0}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        open={openDrawer}
+        variant="outlined"
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={toggleDrawer}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(openDrawer && { display: 'none' }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
           <img src={logo} style={{ maxHeight: 38 }} alt="99Minutos logo" />
+          <Typography ml={1} color="#072146" fontWeight="bold">
+            Brand here
+          </Typography>
+
           <Box sx={{ marginLeft: 2, marginRight: 'auto' }}></Box>
-          <>
-            {user?.name && (
-              <>
-                <Typography
-                  noWrap
-                  fontWeight="bold"
+          {name && (
+            <>
+              <Typography
+                noWrap
+                fontWeight="bold"
+                color="primary"
+                component="div"
+                sx={{ marginRight: 1 }}
+              >
+                {name}
+              </Typography>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar
                   color="primary"
-                  component="div"
-                  sx={{ marginRight: 1 }}
+                  sx={{
+                    bgcolor: stringToColor(name || ''),
+                  }}
                 >
-                  {user.name}
-                </Typography>
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    color="primary"
-                    sx={{
-                      bgcolor: stringToColor(user.name || ''),
-                    }}
-                  >
-                    {stringAvatar(user.name || '')}
-                  </Avatar>
-                </IconButton>
-                <Menu
-                  sx={{ mt: '45px' }}
-                  id="menu-appbar"
-                  anchorEl={handle_el}
-                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                  keepMounted
-                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                  open={!!handle_el}
-                  onClose={handleCloseUserMenu}
-                >
-                  <ProfileMenuOptions closeMenu={handleCloseUserMenu} logout={logout} />
-                </Menu>
-              </>
-            )}
-          </>
+                  {stringAvatar(name || '')}
+                </Avatar>
+              </IconButton>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={handle_el}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                keepMounted
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={!!handle_el}
+                onClose={handleCloseUserMenu}
+              >
+                <ProfileMenuOptions closeMenu={handleCloseUserMenu} />
+              </Menu>
+            </>
+          )}
         </Toolbar>
       </AppBar>
+
+      <Drawer variant="permanent" open={openDrawer}>
+        <DrawerHeader>
+          <IconButton onClick={toggleDrawer}>
+            <ChevronLeft />
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <DrawerMenu />
+      </Drawer>
       <main
         style={{
           flex: 1,
           flexGrow: 1,
           overflowY: 'auto',
+          paddingTop: 'calc(64px)',
           backgroundColor: '#FAFAFA',
-          height: 'calc(100vh - 64px)',
+          height: 'calc(100vh)',
         }}
-        className="p-4"
       >
         {props.children}
       </main>
     </Box>
   );
 }
-
-interface IProfileMenuOptionsProps {
-  logout: () => void;
-  closeMenu: () => void;
-}
-
-const ProfileMenuOptions = (props: IProfileMenuOptionsProps) => {
-  const { closeMenu } = props;
-  return (
-    <MenuItem
-      onClick={() => {
-        closeMenu();
-        props.logout();
-      }}
-    >
-      <Typography textAlign="center">Cerrar Sesión</Typography>
-    </MenuItem>
-  );
-};

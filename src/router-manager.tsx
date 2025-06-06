@@ -1,6 +1,6 @@
 import { Outlet, Route, Routes } from 'react-router-dom';
 
-import { DashboardLayout } from '@/components/layouts/dashboard/dashboard-layout';
+import DashboardLayout from '@/components/layouts/dashboard/dashboard-layout';
 import Page404 from '@/pages/404';
 import WelcomePage from '@/pages/welcome/welcome-page';
 
