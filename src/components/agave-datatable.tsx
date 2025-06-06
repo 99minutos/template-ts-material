@@ -1,11 +1,11 @@
 import { FormControl, MenuItem, Pagination, Select, Stack, styled } from '@mui/material';
-import { grey } from '@mui/material/colors';
 import {
   DataGrid,
   DataGridProps,
   gridPageCountSelector,
   gridPageSelector,
   gridPageSizeSelector,
+  GridRowSpacingParams,
   useGridApiContext,
 } from '@mui/x-data-grid';
 
@@ -16,7 +16,6 @@ export const AgavePagination = () => {
   const page = gridPageSelector(apiRef);
   const pageSize = gridPageSizeSelector(apiRef);
   const pageCount = gridPageCountSelector(apiRef);
-
   return (
     <Stack flexDirection="row" justifyContent="center" alignItems="center">
       <FormControl>
@@ -44,29 +43,18 @@ export const AgavePagination = () => {
   );
 };
 
-const AgaveDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
+const StyledDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
   width: '100%',
   color: theme.palette.primary.main,
   border: 'none',
-  borderColor: 'transparent',
   '& .MuiDataGrid-columnHeaders': {
     border: 'none',
   },
-  '& .MuiDataGrid-topContainer div': {
-    border: 'none',
-    backgroundColor: 'transparent !important',
-  },
-  '& .MuiDataGrid-virtualScroller': {
-    overflow: 'visible !important',
-  },
-  '& .MuiDataGrid-virtualScrollerRenderZone': {
-    height: '100%',
-    position: 'relative',
+  '& .MuiDataGrid-columnHeader': {
+    border: 'none !important',
   },
   '& .MuiDataGrid-row': {
     borderRadius: 8,
-    marginTop: theme.spacing(0.5),
-    marginBottom: theme.spacing(0.5),
     width: 'calc(100% - 2px)',
     border: '1px solid rgba(224, 224, 224, 1)',
     backgroundColor: theme.palette.common.white,
@@ -74,17 +62,16 @@ const AgaveDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
   '& .MuiDataGrid-cell': {
     border: 'none',
     position: 'relative',
-    color: 'black',
   },
-  '& .MuiDataGrid-row .MuiDataGrid-cell:not(:last-of-type):after': {
+  '& .MuiDataGrid-cell:not(:last-child):after': {
     right: 0,
     width: 1,
     zIndex: 2,
     content: "''",
     position: 'absolute',
-    backgroundColor: grey[300],
-    top: theme.spacing(1.5),
-    bottom: theme.spacing(1.5),
+    backgroundColor: '#CACACA',
+    top: theme.spacing(1),
+    bottom: theme.spacing(1),
   },
   '& .MuiDataGrid-footerContainer': {
     border: 'none',
@@ -92,4 +79,26 @@ const AgaveDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
     justifyContent: 'center !important',
   },
 }));
+
+function AgaveDataGrid(props: DataGridProps) {
+  const getRowSpacing = (params: GridRowSpacingParams) => ({
+    top: params.isFirstVisible ? 0 : 5,
+    bottom: params.isLastVisible ? 0 : 5,
+  });
+  const rowHeight = 76;
+  const localeText = {
+    noRowsLabel: 'No hay filas',
+    paginationRowsPerPage: 'Filas por página',
+    paginationDisplayedRows: ({ from, to, count }) =>
+      `${from}-${to} de ${count !== -1 ? count : `más de ${to}`}`,
+  };
+  return (
+    <StyledDataGrid
+      getRowSpacing={props.getRowSpacing ?? getRowSpacing}
+      rowHeight={props.rowHeight ?? rowHeight}
+      localeText={props.localeText ?? localeText}
+      {...props}
+    />
+  );
+}
 export { AgaveDataGrid };
