@@ -89,6 +89,7 @@ function AgaveDataGrid(props: DataGridProps) {
   const localeText = {
     noRowsLabel: 'No hay filas',
     paginationRowsPerPage: 'Filas por página',
+    // @ts-expect-error additional properties not in the type definition
     paginationDisplayedRows: ({ from, to, count }) =>
       `${from}-${to} de ${count !== -1 ? count : `más de ${to}`}`,
   };
