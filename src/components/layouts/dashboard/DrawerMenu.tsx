@@ -1,12 +1,12 @@
 import { Home } from '@mui/icons-material';
 import { Divider, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const DrawerMenu = () => {
   return (
     <>
       <List component="div">
-        <ListItemButton component={Link} to="/" sx={{ px: 2.5 }}>
+        <ListItemButton component={NavLink} to="/" sx={{ px: 2.5 }}>
           <ListItemIcon>
             <Home />
           </ListItemIcon>

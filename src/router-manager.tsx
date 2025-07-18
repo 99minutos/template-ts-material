@@ -1,9 +1,9 @@
 import { Outlet, Route, Routes } from 'react-router-dom';
 
-import DashboardLayout from '@/components/layouts/dashboard/dashboard-layout';
 import Page404 from '@/pages/404';
 import WelcomePage from '@/pages/welcome/welcome-page';
 
+import DashboardTopLayout from './components/layouts/dashboard-top/dashboard-top-layout';
 import { AppProvider } from './components/providers/app/app-provider';
 import { AuthRequired } from './components/providers/auth/guards';
 import { HttpProvider } from './components/providers/http/http-provider';
@@ -18,13 +18,18 @@ import { HttpProvider } from './components/providers/http/http-provider';
  * Libre para agregar proveedores que se comparten a cualquier nivel de la aplicación via useApp()
  */
 
+/**
+ *
+ * La plantilla cuenta con 3 wrappers, DashboardTopLayout, DashboardLayout y SimpleLayout
+ */
+
 function WrapperDashboard() {
   return (
     <HttpProvider>
       <AppProvider>
-        <DashboardLayout>
+        <DashboardTopLayout>
           <Outlet />
-        </DashboardLayout>
+        </DashboardTopLayout>
       </AppProvider>
     </HttpProvider>
   );

@@ -283,18 +283,18 @@
 
 /* Material UI typography utilities */
 @utility typography-* {
-  font: --value(--font- *);
+  font: --value(--font-*);
 }
 
 /* Material UI overlay utilities */
 @utility overlay-* {
-  background-image: --value(--overlay- *);
+  background-image: --value(--overlay-*);
 }
 
 /* Material UI elevation utilities */
 @utility elevation-* {
-  background-image: --value(--overlay- *);
-  box-shadow: --value(--shadow- *);
+  background-image: --value(--overlay-*);
+  box-shadow: --value(--shadow-*);
 }
 
 html,
@@ -322,4 +322,16 @@ body,
   overflow: hidden;
   height: 100vh;
   max-height: 100vh;
+}
+
+.drawer a.active svg,
+.drawer a.active span {
+  font-weight: bold;
+  color: var(--color-secondary);
+}
+
+.top-menu a.active svg,
+.top-menu a.active span {
+  font-weight: bold;
+  color: var(--color-primary);
 }
