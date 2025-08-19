@@ -14,15 +14,17 @@ export function useClaimProvider(): ClaimContextProps {
   const [claims, setClaims] = useState<Record<string, unknown> | null>(null);
 
   const loadJWT = async () => {
-    try {
-      const token = await authHooks.getAccessTokenSilently();
-      if (token) {
-        setJwt(token);
+    setTimeout(async () => {
+      try {
+        const token = await authHooks.getAccessTokenSilently();
+        if (token) {
+          setJwt(token);
+        }
+      } catch (error) {
+        console.error('Error al obtener el token de acceso:', error);
+        setJwt(null);
       }
-    } catch (error) {
-      console.error('Error al obtener el token de acceso:', error);
-      setJwt(null);
-    }
+    }, 300);
   };
 
   const calculateClaims = () => {
