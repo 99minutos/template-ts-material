@@ -1,4 +1,8 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import { useContext } from 'react';
+
+import { ClaimContext } from '@/components/providers/auth/claim-provider';
+import { ClaimContextProps } from '@/components/providers/auth/useClaimProvider';
 
 interface IAuth0Generic {
   logout: () => void;
@@ -9,13 +13,16 @@ interface IAuth0Generic {
 }
 
 export const useAuth0Generic = (): IAuth0Generic => {
-  const { isLoading, isAuthenticated, user, logout } = useAuth0();
-
+  const authHooks = useAuth0();
   return {
-    logout: () => logout({ logoutParams: { returnTo: window.location.origin } }),
-    isLoading,
-    isAuthenticated,
-    name: user?.name,
-    email: user?.email,
+    logout: () => authHooks.logout({ logoutParams: { returnTo: window.location.origin } }),
+    isLoading: authHooks.isLoading,
+    isAuthenticated: authHooks.isAuthenticated,
+    name: authHooks.user?.name,
+    email: authHooks.user?.email,
   };
 };
+
+export function useClaims(): ClaimContextProps {
+  return useContext(ClaimContext);
+}

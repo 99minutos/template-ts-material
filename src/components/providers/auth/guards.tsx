@@ -6,23 +6,31 @@ import { Auth0WithoutPermission } from './restricted';
 
 // redirect to login page if not authenticated
 export const AuthRequired = (props: PropsWithChildren) => {
-  const { isLoading, isAuthenticated, error, loginWithRedirect } = useAuth0();
+  const authHooks = useAuth0();
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading && !error) {
-      loginWithRedirect({
+    if (!authHooks.isAuthenticated && !authHooks.isLoading && !authHooks.error) {
+      authHooks.loginWithRedirect({
         appState: {
           returnTo: window.location.pathname,
         },
       });
     }
-  }, [isAuthenticated, error, isLoading, loginWithRedirect]);
+  }, [
+    authHooks.isAuthenticated,
+    authHooks.error,
+    authHooks.isLoading,
+    authHooks.loginWithRedirect,
+  ]);
 
-  if (isLoading || (!isAuthenticated && !isLoading && !error)) {
+  if (
+    authHooks.isLoading ||
+    (!authHooks.isAuthenticated && !authHooks.isLoading && !authHooks.error)
+  ) {
     return <LoadingPage />;
   }
 
-  if (error) {
+  if (authHooks.error) {
     return <Auth0WithoutPermission />;
   }
 

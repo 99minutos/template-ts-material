@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { VITE_AUTH0_CLIENT_ID, VITE_AUTH0_DOMAIN } from '@/utils/envs';
 
+import ClaimComponent from './claim-provider';
+
 export default function AuthProvider(props: PropsWithChildren) {
   const navigate = useNavigate();
 
@@ -25,7 +27,7 @@ export default function AuthProvider(props: PropsWithChildren) {
       }}
       cacheLocation="localstorage"
     >
-      {props.children}
+      <ClaimComponent>{props.children}</ClaimComponent>
     </Auth0Provider>
   );
 }
