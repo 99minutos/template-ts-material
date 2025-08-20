@@ -1,0 +1,10 @@
+:8080 {
+    # Directorio raíz
+    root * /srv
+
+    # Habilita el servidor de archivos
+    file_server
+
+    # Si un archivo no se encuentra, sirve /index.html
+    try_files {path} /index.html
+}
