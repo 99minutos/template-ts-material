@@ -7,10 +7,6 @@ RUN apk add --no-cache python3 make g++ && corepack enable && corepack prepare p
 ARG VITE_AUTH0_DOMAIN
 ARG VITE_AUTH0_CLIENT_ID
 ARG VITE_URL_SERVICE
-
-ENV VITE_AUTH0_DOMAIN=$VITE_AUTH0_DOMAIN
-ENV VITE_AUTH0_CLIENT_ID=$VITE_AUTH0_CLIENT_ID
-ENV VITE_URL_SERVICE=$VITE_URL_SERVICE
 # END: Set environment variables for the build
 
 WORKDIR /usr/src/app
