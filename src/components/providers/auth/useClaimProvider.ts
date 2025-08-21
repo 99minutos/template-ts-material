@@ -8,6 +8,9 @@ export interface ClaimContextProps {
   isValidFor: (permissions: Array<string> | string) => boolean;
 }
 
+const REFRESH_TOKEN_ERROR_KEY = 'refresh_token_error_count';
+const MAX_REFRESH_TOKEN_ERRORS = 3;
+
 export function useClaimProvider(): ClaimContextProps {
   const authHooks = useAuth0();
   const [jwt, setJwt] = useState<string | null>(null);
@@ -18,11 +21,27 @@ export function useClaimProvider(): ClaimContextProps {
       try {
         const token = await authHooks.getAccessTokenSilently();
         if (token) {
+          localStorage.removeItem(REFRESH_TOKEN_ERROR_KEY);
           setJwt(token);
         }
       } catch (error) {
-        console.error('Error al obtener el token de acceso:', error);
-        setJwt(null);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        if (errorMessage.includes('Missing Refresh Token')) {
+          const currentCount = parseInt(localStorage.getItem(REFRESH_TOKEN_ERROR_KEY) || '0', 10);
+          const newCount = currentCount + 1;
+
+          localStorage.setItem(REFRESH_TOKEN_ERROR_KEY, newCount.toString());
+
+          if (newCount >= MAX_REFRESH_TOKEN_ERRORS) {
+            localStorage.removeItem(REFRESH_TOKEN_ERROR_KEY);
+            authHooks.logout({ logoutParams: { returnTo: window.location.origin } });
+          } else {
+            window.location.reload();
+          }
+        } else {
+          setJwt(null);
+        }
       }
     }, 300);
   };
