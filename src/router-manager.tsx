@@ -5,6 +5,7 @@ import WelcomePage from '@/pages/welcome/welcome-page';
 
 import DashboardTopLayout from './components/layouts/dashboard-top/dashboard-top-layout';
 import { AppProvider } from './components/providers/app/app-provider';
+import ClaimComponent from './components/providers/auth/claim-provider';
 import { AuthRequired } from './components/providers/auth/guards';
 import { HttpProvider } from './components/providers/http/http-provider';
 
@@ -26,11 +27,13 @@ import { HttpProvider } from './components/providers/http/http-provider';
 function WrapperDashboard() {
   return (
     <HttpProvider>
-      <AppProvider>
-        <DashboardTopLayout>
-          <Outlet />
-        </DashboardTopLayout>
-      </AppProvider>
+      <ClaimComponent>
+        <AppProvider>
+          <DashboardTopLayout>
+            <Outlet />
+          </DashboardTopLayout>
+        </AppProvider>
+      </ClaimComponent>
     </HttpProvider>
   );
 }
