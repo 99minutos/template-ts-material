@@ -58,7 +58,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Barlow, sans-serif',
+    fontFamily: 'Barlow, Roboto, sans-serif',
     fontWeightRegular: 400,
     fontWeightMedium: 600,
     fontWeightBold: 700,
