@@ -17,33 +17,60 @@ export function useClaimProvider(): ClaimContextProps {
   const [claims, setClaims] = useState<Record<string, unknown> | null>(null);
 
   const loadJWT = async () => {
-    setTimeout(async () => {
-      try {
-        const token = await authHooks.getAccessTokenSilently();
-        if (token) {
-          localStorage.removeItem(REFRESH_TOKEN_ERROR_KEY);
-          setJwt(token);
-        }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-
-        if (errorMessage.includes('Missing Refresh Token')) {
-          const currentCount = parseInt(localStorage.getItem(REFRESH_TOKEN_ERROR_KEY) || '0', 10);
-          const newCount = currentCount + 1;
-
-          localStorage.setItem(REFRESH_TOKEN_ERROR_KEY, newCount.toString());
-
-          if (newCount >= MAX_REFRESH_TOKEN_ERRORS) {
-            localStorage.removeItem(REFRESH_TOKEN_ERROR_KEY);
-            authHooks.logout({ logoutParams: { returnTo: window.location.origin } });
-          } else {
-            window.location.reload();
-          }
-        } else {
-          setJwt(null);
-        }
+    try {
+      const token = await authHooks.getAccessTokenSilently();
+      if (token) {
+        localStorage.removeItem(REFRESH_TOKEN_ERROR_KEY);
+        setJwt(token);
       }
-    }, 300);
+    } catch (error) {
+      let errorMessage = '';
+      if (isAxiosError(error)) {
+        errorMessage = error.response?.data?.error || error.response?.data?.error_description;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = String(error);
+      }
+
+      if (
+        errorMessage.includes('consent_required') ||
+        errorMessage.includes('login_required') ||
+        errorMessage.includes('invalid_grant') ||
+        errorMessage.includes('403') ||
+        errorMessage.includes('unauthorized') ||
+        errorMessage.includes('Forbidden')
+      ) {
+        localStorage.clear();
+        authHooks.logout({
+          logoutParams: { returnTo: window.location.origin },
+        });
+        return;
+      }
+
+      if (errorMessage.includes('Missing Refresh Token')) {
+        const currentCount = parseInt(localStorage.getItem(REFRESH_TOKEN_ERROR_KEY) || '0', 10);
+        const newCount = currentCount + 1;
+
+        localStorage.setItem(REFRESH_TOKEN_ERROR_KEY, newCount.toString());
+
+        if (newCount >= MAX_REFRESH_TOKEN_ERRORS) {
+          localStorage.removeItem(REFRESH_TOKEN_ERROR_KEY);
+          authHooks.logout({
+            logoutParams: { returnTo: window.location.origin },
+          });
+        } else {
+          authHooks.loginWithRedirect({
+            appState: { returnTo: window.location.pathname },
+          });
+        }
+      } else {
+        localStorage.clear();
+        authHooks.logout({
+          logoutParams: { returnTo: window.location.origin },
+        });
+      }
+    }
   };
 
   const calculateClaims = () => {
@@ -78,6 +105,7 @@ export function useClaimProvider(): ClaimContextProps {
       if (typeof restrictedFor === 'string') {
         return permissions.includes(restrictedFor);
       } else if (Array.isArray(restrictedFor)) {
+        if (restrictedFor.length === 0) return true;
         return restrictedFor.some((permission) => permissions.includes(permission));
       }
       return false;
