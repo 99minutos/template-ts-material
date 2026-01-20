@@ -9,7 +9,7 @@ import {
   useGridApiContext,
 } from '@mui/x-data-grid';
 
-import BootstrapInput from './bootstrap-input';
+import BootstrapInput from '@/components/bootstrap-input.tsx';
 
 export const AgavePagination = () => {
   const apiRef = useGridApiContext();
@@ -47,17 +47,27 @@ const StyledDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
   width: '100%',
   color: theme.palette.primary.main,
   border: 'none',
+  backgroundColor: 'transparent',
+  '& .MuiDataGrid-virtualScroller': {
+    gap: '0.5rem',
+  },
   '& .MuiDataGrid-columnHeaders': {
     border: 'none',
+    borderRadius: '6px',
+    overflow: 'hidden',
+  },
+  '& .MuiDataGrid-columnHeader--last .MuiDataGrid-columnSeparator': {
+    display: 'none !important',
   },
   '& .MuiDataGrid-columnHeader': {
     border: 'none !important',
+    backgroundColor: 'white',
   },
   '& .MuiDataGrid-row': {
     borderRadius: 8,
     width: 'calc(100% - 2px)',
     border: '1px solid rgba(224, 224, 224, 1)',
-    backgroundColor: theme.palette.common.white,
+    backgroundColor: 'white',
   },
   '& .MuiDataGrid-cell': {
     border: 'none',
@@ -77,6 +87,9 @@ const StyledDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
     border: 'none',
     flexDirection: 'column  !important',
     justifyContent: 'center !important',
+  },
+  '& .MuiDataGrid-filler div': {
+    border: 'none',
   },
 }));
 

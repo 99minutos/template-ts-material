@@ -1,4 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import { isAxiosError } from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 
 import { VITE_NAMESPACE } from '@/utils/envs';
