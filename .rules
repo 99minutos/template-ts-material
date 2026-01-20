@@ -1,0 +1,122 @@
+# 99minutos Frontend Architecture & Rules
+
+**Rol:** Senior React/TypeScript Architect.
+**Objetivo:** Generar código limpio, modular y consistente siguiendo estrictamente la separación de lógica y vista.
+
+## 1. Arquitectura de Directorios (Estricto)
+
+La estructura está diseñada para la escalabilidad. **Cualquier desviación será rechazada.**
+
+- `src/assets`: Recursos estáticos (imágenes, fuentes).
+- `src/components`: UI reutilizable globalmente.
+  - `layouts`: Estructuras base (ej. `DashboardLayout`).
+  - `providers`: Contextos globales (Auth, Http, App).
+- `src/domain`: **SOLO** Interfaces TypeScript y tipos de datos. No lógica.
+- `src/hooks`: Hooks transversales (no atados a un componente visual específico).
+- `src/pages`: Rutas de la aplicación.
+- `src/sections`: Componentes específicos de cada página.
+  - **REGLA DE ORO:** La estructura de carpetas de `src/sections` DEBE ser un espejo exacto de `src/pages`.
+- `src/styles`: Temas y estilos globales.
+- `src/utils`: Funciones puras y helpers genéricos.
+
+### Ejemplo de Correspondencia (Pages vs Sections)
+
+```text
+src/pages/configure/geofence/       -> src/sections/configure/geofence/
+src/pages/plan/planning/            -> src/sections/plan/planning/
+```
+
+## 2. Patrón de Diseño: Lógica vs Vista (Separation of Concerns)
+
+Todo componente que maneje estado, efectos o llamadas a API **DEBE** separarse.
+
+### A. Componente con Lógica (Requiere Carpeta)
+**Ruta:** `src/path/to/feature-name/`
+1. `feature-name.tsx` (Vista pura)
+2. `use-feature-name.ts` (Lógica de negocio)
+
+#### Plantilla de Hook (`use-feature-name.ts`)
+```typescript
+import { useState } from 'react';
+import { useHttp } from '@/hooks/use-http'; 
+
+export const useFeatureName = () => {
+  const [value, setValue] = useState(0);
+
+  const onAction = () => {
+    console.log('Action triggered');
+  };
+
+  // Retornar siempre un objeto
+  return {
+    value,
+    onAction
+  };
+};
+```
+
+#### Plantilla de Componente (`feature-name.tsx`)
+```tsx
+import { useFeatureName } from './use-feature-name';
+
+export const FeatureName = () => {
+  // 1. Instanciación ÚNICA. PROHIBIDO desestructurar el objeto hooks.
+  const hooks = useFeatureName();
+
+  return (
+    <div className="flex flex-col gap-4">
+      <h1>Valor: {hooks.value}</h1>
+      <button onClick={hooks.onAction}>Click</button>
+    </div>
+  );
+};
+```
+
+### B. Componente Presentacional (Archivo Único)
+Si el componente solo recibe props y renderiza UI (sin `useState`, `useEffect` propios), crea un solo archivo: `simple-component.tsx`.
+
+## 3. Estrategia de Estilos (MUI + Tailwind)
+
+**TailwindCSS (Layout & Espaciado):**
+- Usar para márgenes, padding, flexbox, grid, ancho, alto.
+- **PROHIBIDO:** Usar el componente `<Box>` de MUI. Usar `div` o `section`.
+- **Ejemplo:** `<div className="flex p-4 w-full">`
+
+**Material UI (Identidad Visual):**
+- Usar para componentes interactivos: `TextField`, `Button`, `Card`.
+- **Inputs:** Preferencia `variant="filled"`.
+- **Contenedores (Card/Paper):** Preferencia `variant="outlined"`.
+
+## 4. Convenciones de Nomenclatura
+
+| Elemento | Convención | Ejemplo |
+| :--- | :--- | :--- |
+| **Archivos** | Kebab Case | `user-profile.tsx`, `use-auth.ts` |
+| **Componentes** | Pascal Case | `UserProfile` |
+| **Hooks** | camelCase (prefix use) | `useUserProfile` |
+| **Props de Dominio** | snake_case | `user_id`, `created_at` |
+| **Event Handlers** | prefix 'on' | `onClick`, `onChangeValue` (NO `handleClick`) |
+
+## 5. Providers y Hooks Globales
+
+Utiliza estos hooks preexistentes en lugar de crear nuevas soluciones para lo mismo:
+
+- **`useApp()`**: Estado global de la app.
+- **`useAuth()`**: Auth0 (User, Logout, IsAuthenticated).
+- **`useClaims()`**: Permisos y roles.
+- **`useHttp()`**: Instancia de Axios configurada.
+
+## 6. Anti-Patrones (Lo que CAUSA RECHAZO DE PR)
+
+1. ❌ **Desestructurar el hook:** `const { data } = useHook();` -> **INCORRECTO**. Usar siempre `hooks.data`.
+2. ❌ **Lógica en JSX:** Escribir `useEffect` o `useState` directamente en el `.tsx` cuando debería estar en el hook.
+3. ❌ **Mezcla de Estilos:** Usar `sx={{ margin: 2 }}` en MUI cuando se puede usar `className="m-4"`.
+4. ❌ **Inventar Tipos:** Definir interfaces dentro del componente. Moverlas siempre a `src/domain`.
+
+## 7. Flujo de Trabajo
+
+1. **Analizar:** ¿Es página o sección? ¿Requiere lógica compleja?
+2. **Definir Dominio:** Crear interfaces en `src/domain` si es necesario.
+3. **Crear Hook:** Implementar toda la lógica y estados en `use-feature.ts`.
+4. **Crear Vista:** Maquetar en `feature.tsx` conectando con `const hooks = useFeature()`.
+5. **Validar:** Verificar que no haya `<Box>`, que los nombres sean correctos y que la lógica esté separada.
