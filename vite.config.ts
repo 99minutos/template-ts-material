@@ -1,6 +1,6 @@
 import path from 'path';
 import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import oxlintPlugin from 'vite-plugin-oxlint';
 
@@ -13,18 +13,27 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'mui-vendor': [
-            '@mui/material',
-            '@mui/icons-material',
-            '@emotion/react',
-            '@emotion/styled',
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react-vendor',
+              test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+            },
+            {
+              name: 'mui-vendor',
+              test: /[\\/]node_modules[\\/](@mui[\\/]material|@mui[\\/]icons-material|@emotion[\\/]react|@emotion[\\/]styled)[\\/]/,
+            },
+            {
+              name: 'form-vendor',
+              test: /[\\/]node_modules[\\/](react-hook-form|@hookform[\\/]resolvers|zod)[\\/]/,
+            },
+            {
+              name: 'utils-vendor',
+              test: /[\\/]node_modules[\\/](lodash|date-fns|axios|classnames)[\\/]/,
+            },
           ],
-          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          'utils-vendor': ['lodash', 'date-fns', 'axios', 'classnames'],
         },
       },
     },
