@@ -1,5 +1,8 @@
 export const stringAvatar = (name: string) => {
-  return `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`;
+  const words = name.trim().split(' ').filter(Boolean);
+  const first = words[0]?.[0] ?? '?';
+  const second = words[1]?.[0] ?? words[0]?.[1] ?? first;
+  return `${first}${second}`.toUpperCase();
 };
 
 export const stringToColor = (string: string) => {
